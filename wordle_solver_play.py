@@ -1,3 +1,4 @@
+import wordle_data
 import wordle_solver
 import re
 
@@ -55,7 +56,7 @@ def create_solution_chart(solution, guesses):
 
     return chart
 
-solution, guesses = wordle_solver.play_wordle(prompt_user_for_guess_result)
+solution, guesses = wordle_solver.play_wordle(wordle_data.GUESSES_AND_SOLUTIONS, wordle_data.SOLUTIONS, prompt_user_for_guess_result)
 if (solution != None):
     print('\nCongratulations on your win! 🎉')
     print('\nHere is your chart:')

@@ -3,27 +3,29 @@ import wordle_solver
 
 expected_solution = ''
 
-def test_solutions(solutions):
+def test_wordle_solver():
     global expected_solution
 
-    solutions_found = []
-    solutions_not_found = []
+    solutions = sorted(wordle_data.SOLUTIONS)
+    solutions_solved = []
+    solutions_not_solved = []
 
     for index, solution_to_test in enumerate(solutions):
         expected_solution = solution_to_test
-        solution, guesses = wordle_solver.play_wordle(get_result_input = get_result_input)
+        solution, guesses = wordle_solver.play_wordle(wordle_data.GUESSES_AND_SOLUTIONS, wordle_data.SOLUTIONS, get_result_input = get_result_input)
         if solution != None:
-            solutions_found.append((solution, guesses))
-            print('🟩 Test ' + str(index + 1) + ' / ' + str(len(solutions)) + ': "' + expected_solution.upper() + '" => ' + str(guesses))
+            solutions_solved.append((solution, guesses))
+            print('🟩 Test ' + str(index + 1) + ' / ' + str(len(wordle_data.SOLUTIONS)) + ': "' + expected_solution.upper() + '" => ' + str(guesses))
         else:
-            solutions_not_found.append((solution, guesses))
-            print('🟥 Test ' + str(index + 1) + ' / ' + str(len(solutions)) + ': "' + expected_solution.upper() + '" => ' + str(guesses))
+            solutions_not_solved.append((solution, guesses))
+            print('🟥 Test ' + str(index + 1) + ' / ' + str(len(wordle_data.SOLUTIONS)) + ': "' + expected_solution.upper() + '" => ' + str(guesses))
 
-    return solutions_found, solutions_not_found
+    return solutions_solved, solutions_not_solved
 
 def get_result_input(guess, _):
     result_input = ''
 
+    # Simulate the result input the user would type when using the solver to play the game
     counted_characters = []
     for position, guess_character in enumerate(list(guess)):
         if guess_character == expected_solution[position]:
@@ -36,8 +38,8 @@ def get_result_input(guess, _):
 
     return result_input
 
-solutions_found, solutions_not_found = test_solutions(wordle_data.solutions)
+solutions_solved, solutions_not_solved = test_wordle_solver()
 print(
-    '\nValid solutions found for ' + str(len(solutions_found)) + ' out of ' + str(len(wordle_data.solutions)) + ' cases' + \
-    ' (' + str(round((len(solutions_found) * 100.0) / len(wordle_data.solutions), 2)) + '%)' + \
-    ' with an average of ' + str(round(sum(len(guesses) for _, guesses in solutions_found) / len(solutions_found), 2)) + ' guesses per found solution.')
+    '\nValid solutions found for ' + str(len(solutions_solved)) + ' out of ' + str(len(wordle_data.SOLUTIONS)) + ' cases' + \
+    ' (' + str(round((len(solutions_solved) * 100.0) / len(wordle_data.SOLUTIONS), 2)) + '%)' + \
+    ' with an average of ' + str(round(sum(len(guesses) for _, guesses in solutions_solved) / len(solutions_solved), 2)) + ' guesses per found solution.')

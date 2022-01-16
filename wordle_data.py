@@ -1,4 +1,4 @@
-guesses = [
+GUESSES = [
     "aahed",
     "aalii",
     "aargh",
@@ -10658,7 +10658,7 @@ guesses = [
     "zymic",
 ]
 
-solutions = [
+SOLUTIONS = [
     "cigar",
     "rebut",
     "sissy",
@@ -12975,3 +12975,5 @@ solutions = [
     "rural",
     "shave",
 ]
+
+GUESSES_AND_SOLUTIONS = GUESSES + SOLUTIONS

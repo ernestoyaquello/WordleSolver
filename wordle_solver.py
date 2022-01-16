@@ -1,22 +1,22 @@
-import wordle_data
 from collections import defaultdict
 
-solutions_letter_count = None
-potential_guesses = set(wordle_data.guesses + wordle_data.solutions)
+cached_solutions_letter_count = None
 
-def play_wordle(get_result_input):
-    global solutions_letter_count
+def play_wordle(candidate_guesses, candidate_solutions, get_result_input):
+    global cached_solutions_letter_count
 
     solution = None
     guesses = []
 
     # Calculate the number of occurrences of each letter in all the possible solutions so we can later give each potential guess a score
+    solutions_letter_count = cached_solutions_letter_count
     if solutions_letter_count == None:
         solutions_letter_count = defaultdict(int)
-        for candidate_solution in wordle_data.solutions:
+        for candidate_solution in candidate_solutions:
             for position, letter in enumerate(list(candidate_solution)):
                 solutions_letter_count[letter] += 1
                 solutions_letter_count[(letter, str(position))] += 1
+        cached_solutions_letter_count = solutions_letter_count
 
     # Row after row, calculate the next best guess and then iterate after getting the result formated as 01201
     discarded_letters = []
@@ -24,7 +24,7 @@ def play_wordle(get_result_input):
     letters_in_right_positions = defaultdict(str)
     row = 0
     while solution == None and row < 6:
-        best_guess = calculate_best_guess(solutions_letter_count, discarded_letters, letters_in_wrong_positions, letters_in_right_positions)
+        best_guess, candidate_guesses = calculate_best_guess(candidate_guesses, candidate_solutions, solutions_letter_count, discarded_letters, letters_in_wrong_positions, letters_in_right_positions)
 
         if best_guess != None:
             guesses.append(best_guess.upper())
@@ -54,19 +54,22 @@ def play_wordle(get_result_input):
 
     return solution, guesses
 
-def calculate_best_guess(solutions_letter_count, discarded_letters, letters_in_wrong_positions, letters_in_right_positions):
+def calculate_best_guess(candidate_guesses, candidate_solutions, solutions_letter_count, discarded_letters, letters_in_wrong_positions, letters_in_right_positions):
     best_guess = None
+    updated_candidate_guesses = []
 
     # Calculate the best possible valid guess
-    best_guess_score = 0
-    for guess in potential_guesses:
+    best_guess_score = -1
+    for guess in candidate_guesses:
         if is_guess_valid(guess, discarded_letters, letters_in_wrong_positions, letters_in_right_positions):
+            updated_candidate_guesses.append(guess)
             guess_score = calculate_guess_score(guess, solutions_letter_count)
-            if guess_score > best_guess_score or (guess_score == best_guess_score and guess in wordle_data.solutions):
+            if guess_score > best_guess_score or (guess_score == best_guess_score and guess in candidate_solutions):
                 best_guess = guess
                 best_guess_score = guess_score
 
-    return best_guess
+    # Along with the guess, we also return the updated (i.e., reduced) list of valid candidate guesses so there are less ones to iterate over on the next attempt
+    return best_guess, updated_candidate_guesses
 
 def is_guess_valid(guess, discarded_letters, letters_in_wrong_positions, letters_in_right_positions):
     # Iterate over each letter to discard the ones that are not present in the solution and the ones that are in positions we know to be invalid
