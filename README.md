@@ -20,6 +20,12 @@ For example, you could prioritise different guesses depending on how often the c
 
 This simple program takes both of the criteria described above to calculate the next guess that is most likely to lead you to a victory.
 
+### How to use
+
+To get this program to assist you on your play, run the Python script `wordle_solver_play.py` and follow the instructions.
+
+To run automated tests with all the possible solutions of the game, run the Python script `wordle_solver_test.py`.
+
 ## Demo
 
 https://user-images.githubusercontent.com/2463287/149636634-85a28e0b-4143-4add-a3da-2e05b508c03f.mp4
